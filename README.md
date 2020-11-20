@@ -1,4 +1,4 @@
-# openMechanics
+# open physic experiments
 3d Print Physics Experiments with optional PhyPhox Measuring
 
 ## Goal
