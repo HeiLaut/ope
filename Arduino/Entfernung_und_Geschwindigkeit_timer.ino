@@ -1,16 +1,16 @@
-#include <phyphoxBle.h> 
-#include <NewPing.h>
-#include <Button.h>
+#include <phyphoxBle.h> // for accesing the phyphox app https://github.com/Staacks/phyphox-arduino
+#include <NewPing.h> //for easy use of the ultrasonic sensor https://github.com/KurtE/NewPing
+#include <Button.h> // for easy button-access https://github.com/madleech/Button
 
-#define TRIGGER_PIN 16
-#define ECHO_PIN 17
-#define MAX_DISTANCE 200
+#define TRIGGER_PIN 16 //enter correct pin for trigger
+#define ECHO_PIN 17 //enter correct pin for echo
+#define MAX_DISTANCE 200 // enter max_distance here, helps get rid of peaks
 
-float duration, distance, d_old, velocity, offset,t_offset;
-int timer;
-Button offset_button(2);
+float duration, distance, d_old, velocity, offset,t_offset; //defining global variables
+int timer; //define timer for better time accuracy
+Button offset_button(2); //creating the button for offset time and distance
 
-NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); 
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); //defining ultrasonic sensor
 
 void setup()
 {
