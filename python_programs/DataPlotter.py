@@ -73,27 +73,31 @@ def list_serial():
 #     return connected
 
 def gui():
+    # global variables are neccessary because they are used in the main thread and the sup-thread
+    # starts a thread, wich is continuesly updating the data comming from the serial port
+    # important because so no delay will accure while running the gui
+    
     global run, data, ser_error
 
+    # starts the serial port selector window
     select_layout = [
     [sg.Text('Choose Serial Port', size=(30, 1))],
     [sg.OptionMenu((list_serial()), key = '-COMS-')],
     [sg.Button('OK'), sg.Button('Exit')]]
     
-
+    # wait for choosing a serial port
     select_window = sg.Window('COM-Port wählen', select_layout, default_element_size=(40, 1), grab_anywhere=False, finalize = True)
     event, values = select_window.read()
     
-    # if window is closed and no port choosen, then the programm will stop
+    # if window is closed and no port choosen, then the programm will stop, else Serial port ist set to selectet com-Port 
     if event in ('Exit', None):
         select_window.close()
         return
     else:
         select_window.close()
     port = values['-COMS-']
-    # global variables are neccessary because they are used in the main thread and the sup-thread
-    # starts a thread, wich is continuesly updating the data comming from the serial port
-    # important because so no delay will accure while running the gui
+    
+
     
    
     t1 = threading.Thread(target = get_data, args = (port,))
