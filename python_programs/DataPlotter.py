@@ -6,24 +6,28 @@ import serial
 import time
 import threading
 from multiprocessing import Process, Value, Array
-import random
+from random import randint
 import csv
+import serial.tools.list_ports
+QT_LOGGING_RULES="qt5ct.debug=false"
+
+
 sg.theme("DarkTeal2")
 #import pyautogui //to get the Position of the mouse
 run = True
 ser_error = False
 data = ["0.0","0.0"]
-def get_data():
+def get_data(port):
     '''test the Serial connection and getting data from it
     split the data in a array with the first data to be x and
     the seccond to be y. saves the data in the global variable data'''
     global run, data, ser_error
-    try:
-        ser = serial.Serial('COM6', baudrate = 9600)
-    except:
-        print("Serial Error")
-        ser_error = True
-        exit() #Stops Thread, when a Serial Error accures
+    ser = serial.Serial(port, baudrate = 9600)
+        
+#     except:
+#         print("Serial Error")
+#         ser_error = True
+#         exit() #Stops Thread, when a Serial Error accures
     #i = 0
     while run  == True:
         #time.sleep(0.05)
@@ -58,15 +62,45 @@ def csv_out(x,y,folder):
         csv_o = list(zip(x,y))
         for row in csv_o:
             writer.writerow(row)
+def list_serial():
+    comlist = serial.tools.list_ports.comports()
+    connected = []
+    for element in comlist:
+        connected.append(element.device)
+    return connected      
+# def list_com_test():
+#     connected = [f'COM{randint(0,5)}', f'COM{randint(0,25)}',f'COM{randint(0,15)}',f'COM{randint(0,5)}',]
+#     return connected
 
 def gui():
-    # global variables are neccessary because they are used in the main thread and the sup-thread
     global run, data, ser_error
 
+    select_layout = [
+    [sg.Text('Choose Serial Port', size=(30, 1))],
+    [sg.OptionMenu((list_serial()), key = '-COMS-')],
+    [sg.Button('OK'), sg.Button('Exit')]]
+    
+
+    select_window = sg.Window('COM-Port wählen', select_layout, default_element_size=(40, 1), grab_anywhere=False, finalize = True)
+    event, values = select_window.read()
+    
+    # if window is closed and no port choosen, then the programm will stop
+    if event in ('Exit', None):
+        select_window.close()
+        return
+    else:
+        select_window.close()
+    port = values['-COMS-']
+    # global variables are neccessary because they are used in the main thread and the sup-thread
     # starts a thread, wich is continuesly updating the data comming from the serial port
     # important because so no delay will accure while running the gui
-    t1 = threading.Thread(target = get_data, args = ())
+    
+   
+    t1 = threading.Thread(target = get_data, args = (port,))
     t1.start()
+    
+
+
 
     # define the form layout
     layout = [[sg.Text('Data Plot', size=(40, 1), justification='center', font='Helvetica 20')],
